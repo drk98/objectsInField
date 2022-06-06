@@ -725,8 +725,8 @@ class asteroidlist(asteroids):
         sp.unload(camera.fkfile)
         sp.unload(camera.sclkfile)
         sp.unload(obscode+".bsp")
-
-        return data
+        if save:
+            return data
 
 #-----------------------------------------------------------------------------------------------
 
