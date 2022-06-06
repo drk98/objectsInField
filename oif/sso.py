@@ -1,6 +1,7 @@
 import numpy as np
 import pyoorb as oo
 import spiceypy as sp
+import pandas as pd
 import csv
 import os
 import sys
@@ -525,7 +526,7 @@ class asteroids:
                 VH0=Vmag-self.oorb_orbit[0][10]
 
                 if save:
-                    data['ObjId'].append(self.name)
+                    data['ObjID'].append(self.name)
                     data['FieldID'].append(ids[i])
                     data['FieldMJD'].append(time[i])
                     data['AstRange(km)'].append(radec[0])
@@ -547,7 +548,7 @@ class asteroids:
                     data['Obs-Sun(J2000vy)(km/s)'].append(obssunstate[4])
                     data['Obs-Sun(J2000vz)(km/s)'].append(obssunstate[5])
                     data['Sun-Ast-Obs(deg)'].append(np.degrees(phase_angle))
-                    data['V'].append(VMag)
+                    data['V'].append(Vmag)
                     data['V(H=0)'].append(VH0)
 
                 else:
@@ -714,7 +715,7 @@ class asteroidlist(asteroids):
             
             r = i.checkvisspice(obscode,camera,times,ids, save=save)
             if save:
-                data = data.append(r,ignore_index = True)
+                data = pd.concat([data, pd.DataFrame(r)],ignore_index = True)
             del i
             del self.asteroids[0]
             count=count+1
