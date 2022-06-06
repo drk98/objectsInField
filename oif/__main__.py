@@ -19,7 +19,7 @@ import sys
 import argparse
 import warnings
 import pyoorb as oo
-import dataclasses import dataclass
+from dataclasses import dataclass
 
 from . import shared
 from . import telescope as ts
