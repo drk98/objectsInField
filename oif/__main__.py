@@ -19,6 +19,7 @@ import sys
 import argparse
 import warnings
 import pyoorb as oo
+import dataclasses import dataclass
 
 from . import shared
 from . import telescope as ts
@@ -70,13 +71,29 @@ def get_or_exit(config, section, key, message):
     except KeyError:
         sys.exit(message)
 
-def main():
-    #Parsing command line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input", help="Input  configuration filename.", type=str)
-    parser.add_argument("-f", help="Force the program to replace asteroid SPKs", action="store_true")
-    args = parser.parse_args()
-    
+@dataclass
+class ArgParseMock:
+    f:bool
+    input:str
+
+    def __post_init__(self):
+        """Check the inputs
+
+        """
+        if not isinstance(self.f, bool):
+            raise TypeError
+
+        assert os.path.exists(self.input)
+
+def main(args:ArgParseMock=None, verbose=True):
+
+    if args is None:
+        #Parsing command line arguments
+        parser = argparse.ArgumentParser()
+        parser.add_argument("input", help="Input  configuration filename.", type=str)
+        parser.add_argument("-f", help="Force the program to replace asteroid SPKs", action="store_true")
+        args = parser.parse_args()
+        
     inputfile=args.input
 
     configdict={}
@@ -169,11 +186,12 @@ def main():
     surveydb              = resolve_path(surveydb)
     # Done reading configuration file
 
-    #If it made it this far, print header
-    with open(inputfile,'r') as f:
-        for row in f:
-            if(not row.startswith("#") and not row.startswith(";") and row.strip()):
-                print(row,end='')
+    if verbose:
+        #If it made it this far, print header
+        with open(inputfile,'r') as f:
+            for row in f:
+                if(not row.startswith("#") and not row.startswith(";") and row.strip()):
+                    print(row,end='')
 
     # Changing directory to data path
     os.makedirs(cachedir, exist_ok=True)
@@ -259,16 +277,19 @@ def main():
     ndays=np.ceil(endtime-starttime)
     if (ndays<0):
         sys.exit('nFields exceeds the number of frames in the database')
-
-    print("Survey length:")
-    print("Field 1 : ", starttime)
-    print("Field n : ", endtime)
-    print("Days : ", ndays)
-    print('END HEADER')
+    if verbose:
+        print("Survey length:")
+        print("Field 1 : ", starttime)
+        print("Field n : ", endtime)
+        print("Days : ", ndays)
+        print('END HEADER')
 
     threshold=np.radians(threshold)
     t0 = time.time()
-    a.simulate(starttime, starttime+ndays, c, threshold, obscode)
+    rv = a.simulate(starttime, starttime+ndays, c, threshold, obscode)
     t1 = time.time()
-    print("#Simulation time: ", (t1-t0))
+    if verbose:
+        print("#Simulation time: ", (t1-t0))
     #os.system('rm ckip fakesclk test.fk tmp.fk camera.ti cksetupfile tmp')
+
+    return rv

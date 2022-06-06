@@ -481,7 +481,7 @@ class asteroids:
 
 #-----------------------------------------------------------------------------------------------
     
-    def checkvisspice(self,observer, camera, time, ids):
+    def checkvisspice(self,observer, camera, time, ids, save=False):
 
         """Use SPICE to check whether asteroid is in FOV at input times
 
@@ -497,7 +497,7 @@ class asteroids:
         """
         
         observerint=str(self.mpc2internal(observer))
-
+        data = {'ObjID':[],'FieldID':[],'FieldMJD':[],'AstRange(km)':[],'AstRangeRate(km/s)':[],'AstRA(deg)':[],'AstRARate(deg/day)':[],'AstDec(deg)':[],'AstDecRate(deg/day)':[],'Ast-Sun(J2000x)(km)':[],'Ast-Sun(J2000y)(km)':[],'Ast-Sun(J2000z)(km)':[],'Ast-Sun(J2000vx)(km/s)':[],'Ast-Sun(J2000vy)(km/s)':[],'Ast-Sun(J2000vz)(km/s)':[],'Obs-Sun(J2000x)(km)':[],'Obs-Sun(J2000y)(km)':[],'Obs-Sun(J2000z)(km)':[],'Obs-Sun(J2000vx)(km/s)':[],'Obs-Sun(J2000vy)(km/s)':[],'Obs-Sun(J2000vz)(km/s)':[],'Sun-Ast-Obs(deg)':[],'V':[],'V(H=0)':[]}
         count = 0
         for i in range(0,len(time)):
 
@@ -524,37 +524,65 @@ class asteroids:
                 Vmag=self.vismag(self.oorb_orbit[0][10], self.oorb_orbit[0][11], phase_angle, astobsdelta, astsundelta)
                 VH0=Vmag-self.oorb_orbit[0][10]
 
-#                opstr="%-9d "  %(self.id)
-                opstr="%-10s " %(self.name)
-                opstr=opstr+"%9d " %(ids[i])
-                opstr=opstr+"%12.6f " %(time[i])
-#                opstr=opstr+"%10s " %(test)
-                opstr=opstr+"%16.3f " %(radec[0])
-                opstr=opstr+"%8.3f " %(radec[3])
-                opstr=opstr+"%11.6f " %(np.degrees(radec[1])%360)
-                opstr=opstr+"%9.6f " %(np.degrees(radec[4])*shared.day2s)
-                opstr=opstr+"%10.6f " %(np.degrees(radec[2]))
-                opstr=opstr+"%9.6f " %(np.degrees(radec[5])*shared.day2s)
-                opstr=opstr+"%16.3f " %(astsunstate[0])
-                opstr=opstr+"%16.3f " %(astsunstate[1])
-                opstr=opstr+"%16.3f " %(astsunstate[2])
-                opstr=opstr+"%8.3f "  %(astsunstate[3])
-                opstr=opstr+"%8.3f "  %(astsunstate[4])
-                opstr=opstr+"%8.3f "  %(astsunstate[5])
-                opstr=opstr+"%16.3f " %(obssunstate[0])
-                opstr=opstr+"%16.3f " %(obssunstate[1])
-                opstr=opstr+"%16.3f " %(obssunstate[2])
-                opstr=opstr+"%8.3f "  %(obssunstate[3])
-                opstr=opstr+"%8.3f "  %(obssunstate[4])
-                opstr=opstr+"%8.3f "  %(obssunstate[5])
-                opstr=opstr+"%11.6f " %(np.degrees(phase_angle))
-                opstr=opstr+"%7.3f  " %(Vmag)
-                opstr=opstr+"%7.3f  " %(VH0)
-                print(opstr)
+                if save:
+                    data['ObjId'].append(self.name)
+                    data['FieldID'].append(ids[i])
+                    data['FieldMJD'].append(time[i])
+                    data['AstRange(km)'].append(radec[0])
+                    data['AstRangeRate(km/s)'].append(radec[3])
+                    data['AstRA(deg)'].append(np.degrees(radec[1])%360)
+                    data['AstRARate(deg/day)'].append(np.degrees(radec[4])*shared.day2s)
+                    data['AstDec(deg)'].append(np.degrees(radec[2]))
+                    data['AstDecRate(deg/day)'].append(np.degrees(radec[5])*shared.day2s)
+                    data['Ast-Sun(J2000x)(km)'].append(astsunstate[0])
+                    data['Ast-Sun(J2000y)(km)'].append(astsunstate[1])
+                    data['Ast-Sun(J2000z)(km)'].append(astsunstate[2])
+                    data['Ast-Sun(J2000vx)(km/s)'].append(astsunstate[3])
+                    data['Ast-Sun(J2000vy)(km/s)'].append(astsunstate[4])
+                    data['Ast-Sun(J2000vz)(km/s)'].append(astsunstate[5])
+                    data['Obs-Sun(J2000x)(km)'].append(obssunstate[0])
+                    data['Obs-Sun(J2000y)(km)'].append(obssunstate[1])
+                    data['Obs-Sun(J2000z)(km)'].append(obssunstate[2])
+                    data['Obs-Sun(J2000vx)(km/s)'].append(obssunstate[3])
+                    data['Obs-Sun(J2000vy)(km/s)'].append(obssunstate[4])
+                    data['Obs-Sun(J2000vz)(km/s)'].append(obssunstate[5])
+                    data['Sun-Ast-Obs(deg)'].append(np.degrees(phase_angle))
+                    data['V'].append(VMag)
+                    data['V(H=0)'].append(VH0)
+
+                else:
+    #                opstr="%-9d "  %(self.id)
+                    opstr="%-10s " %(self.name)
+                    opstr=opstr+"%9d " %(ids[i])
+                    opstr=opstr+"%12.6f " %(time[i])
+    #                opstr=opstr+"%10s " %(test)
+                    opstr=opstr+"%16.3f " %(radec[0])
+                    opstr=opstr+"%8.3f " %(radec[3])
+                    opstr=opstr+"%11.6f " %(np.degrees(radec[1])%360)
+                    opstr=opstr+"%9.6f " %(np.degrees(radec[4])*shared.day2s)
+                    opstr=opstr+"%10.6f " %(np.degrees(radec[2]))
+                    opstr=opstr+"%9.6f " %(np.degrees(radec[5])*shared.day2s)
+                    opstr=opstr+"%16.3f " %(astsunstate[0])
+                    opstr=opstr+"%16.3f " %(astsunstate[1])
+                    opstr=opstr+"%16.3f " %(astsunstate[2])
+                    opstr=opstr+"%8.3f "  %(astsunstate[3])
+                    opstr=opstr+"%8.3f "  %(astsunstate[4])
+                    opstr=opstr+"%8.3f "  %(astsunstate[5])
+                    opstr=opstr+"%16.3f " %(obssunstate[0])
+                    opstr=opstr+"%16.3f " %(obssunstate[1])
+                    opstr=opstr+"%16.3f " %(obssunstate[2])
+                    opstr=opstr+"%8.3f "  %(obssunstate[3])
+                    opstr=opstr+"%8.3f "  %(obssunstate[4])
+                    opstr=opstr+"%8.3f "  %(obssunstate[5])
+                    opstr=opstr+"%11.6f " %(np.degrees(phase_angle))
+                    opstr=opstr+"%7.3f  " %(Vmag)
+                    opstr=opstr+"%7.3f  " %(VH0)
+                    print(opstr)
                 count+=1
                 # END TESTING
 
         sp.unload(self.spkname)
+        return data
         
 ############################################################################################################
 #                                            Asteroid List Class                                           #
@@ -660,7 +688,7 @@ class asteroidlist(asteroids):
 
 #-----------------------------------------------------------------------------------------------
 
-    def simulate(self, starttime, stoptime, camera, threshold, obscode):
+    def simulate(self, starttime, stoptime, camera, threshold, obscode, save=False):
         """
         """
 #        loading all SPICE kernels required for simulation
@@ -673,37 +701,20 @@ class asteroidlist(asteroids):
 
         #Print header
 #        head="#AstID "
-        head="ObjID "
-        head=head+"FieldID "
-        head=head+"FieldMJD "
-        head=head+"AstRange(km) "
-        head=head+"AstRangeRate(km/s) "
-        head=head+"AstRA(deg) "
-        head=head+"AstRARate(deg/day) "
-        head=head+"AstDec(deg) "
-        head=head+"AstDecRate(deg/day) "
-        head=head+"Ast-Sun(J2000x)(km) "
-        head=head+"Ast-Sun(J2000y)(km) "
-        head=head+"Ast-Sun(J2000z)(km) "
-        head=head+"Ast-Sun(J2000vx)(km/s) "
-        head=head+"Ast-Sun(J2000vy)(km/s) "
-        head=head+"Ast-Sun(J2000vz)(km/s) "
-        head=head+"Obs-Sun(J2000x)(km) "
-        head=head+"Obs-Sun(J2000y)(km) "
-        head=head+"Obs-Sun(J2000z)(km) "
-        head=head+"Obs-Sun(J2000vx)(km/s) "
-        head=head+"Obs-Sun(J2000vy)(km/s) "
-        head=head+"Obs-Sun(J2000vz)(km/s) "
-        head=head+"Sun-Ast-Obs(deg) "
-        head=head+"V "
-        head=head+"V(H=0) "
-        print(head)
+        if save:
+            data = pd.DataFrame({'ObjID':[],'FieldID':[],'FieldMJD':[],'AstRange(km)':[],'AstRangeRate(km/s)':[],'AstRA(deg)':[],'AstRARate(deg/day)':[],'AstDec(deg)':[],'AstDecRate(deg/day)':[],'Ast-Sun(J2000x)(km)':[],'Ast-Sun(J2000y)(km)':[],'Ast-Sun(J2000z)(km)':[],'Ast-Sun(J2000vx)(km/s)':[],'Ast-Sun(J2000vy)(km/s)':[],'Ast-Sun(J2000vz)(km/s)':[],'Obs-Sun(J2000x)(km)':[],'Obs-Sun(J2000y)(km)':[],'Obs-Sun(J2000z)(km)':[],'Obs-Sun(J2000vx)(km/s)':[],'Obs-Sun(J2000vy)(km/s)':[],'Obs-Sun(J2000vz)(km/s)':[],'Sun-Ast-Obs(deg)':[],'V':[],'V(H=0)':[]})
+        else:
+            head="ObjID FieldID FieldMJD AstRange(km) AstRangeRate(km/s) AstRA(deg) AstRARate(deg/day) AstDec(deg) AstDecRate(deg/day) Ast-Sun(J2000x)(km) Ast-Sun(J2000y)(km) Ast-Sun(J2000z)(km) Ast-Sun(J2000vx)(km/s) Ast-Sun(J2000vy)(km/s) Ast-Sun(J2000vz)(km/s) Obs-Sun(J2000x)(km) Obs-Sun(J2000y)(km) Obs-Sun(J2000z)(km) Obs-Sun(J2000vx)(km/s) Obs-Sun(J2000vy)(km/s) Obs-Sun(J2000vz)(km/s) Sun-Ast-Obs(deg) V V(H=0) "
+            print(head)
         
         while self.asteroids:
             i=self.asteroids[0]
             i.nightlystates([starttime, stoptime])
             [times,ids]= i.shortlist(camera,threshold)
-            i.checkvisspice(obscode,camera,times,ids)
+            
+            r = i.checkvisspice(obscode,camera,times,ids, save=save)
+            if save:
+                data = data.append(r,ignore_index = True)
             del i
             del self.asteroids[0]
             count=count+1
@@ -714,6 +725,8 @@ class asteroidlist(asteroids):
         sp.unload(camera.fkfile)
         sp.unload(camera.sclkfile)
         sp.unload(obscode+".bsp")
+
+        return data
 
 #-----------------------------------------------------------------------------------------------
 
