@@ -286,7 +286,7 @@ def main(args:ArgParseMock=None, verbose=True):
 
     threshold=np.radians(threshold)
     t0 = time.time()
-    rv = a.simulate(starttime, starttime+ndays, c, threshold, obscode, save=verbose)
+    rv = a.simulate(starttime, starttime+ndays, c, threshold, obscode, save=not verbose)
     t1 = time.time()
     if verbose:
         print("#Simulation time: ", (t1-t0))
